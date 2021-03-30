@@ -95,6 +95,10 @@ class drawArc @JvmOverloads constructor(
         wakeLayout = inflater.inflate(wakeLayoutId, this, false)
         addView(sleepLayout)
         addView(wakeLayout)
+
+        // 하드웨어 가속 금지
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setWillNotDraw(false)
     }
 
 
