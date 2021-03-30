@@ -37,6 +37,7 @@ class drawArc @JvmOverloads constructor(
         private const val SCALE_LABEL_TEXT_SIZE = 13F
         private const val DEFAULT_PROGRESS_BACKGROUND_COLOR = "#202633"
         private const val DEFAULT_PROGRESS_COLOR = "#7381a4"
+        private const val DEFAULT_DIVISION_COLOR = "#7381a4"
         private const val BLUR_STROKE_RATIO = 3 / 8F
         private const val BLUR_RADIUS_RATIO = 1 / 4F
     }
@@ -54,7 +55,7 @@ class drawArc @JvmOverloads constructor(
 
         var progressBgStrokeWidth = dp2px(DEFAULT_STROKE_WIDTH_DP)
         var progressBackgroundColor = Color.parseColor(DEFAULT_PROGRESS_BACKGROUND_COLOR)
-        var divisionColor = Color.parseColor(DEFAULT_PROGRESS_BACKGROUND_COLOR)
+        var divisionColor = Color.parseColor(DEFAULT_DIVISION_COLOR)
         var sleepLayoutId = 0
         var wakeLayoutId = 0
 
