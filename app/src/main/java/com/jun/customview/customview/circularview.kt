@@ -3,6 +3,7 @@ package com.jun.customview.customview
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -17,6 +18,7 @@ class circularview @JvmOverloads constructor(
     // paint
     private var outterCirclePaint: Paint? = null
     private var innerCirclePaint: Paint? = null
+    private var arcPaint: Paint? = null
 
     // Parameter
     private var innerCx = 100f
@@ -40,6 +42,7 @@ class circularview @JvmOverloads constructor(
         // init Paint
         outterCirclePaint = Paint()
         innerCirclePaint = Paint()
+        arcPaint = Paint()
 
 
         // Setting Paint
@@ -55,8 +58,6 @@ class circularview @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         canvas.drawCircle(100F, 100F, 100F, outterCirclePaint!!)
         canvas.drawCircle(innerCx, innerCy, 80F, innerCirclePaint!!)
-        canvas.save()
-//        canvas.rotate(-90f,200F, 200F)
         super.onDraw(canvas)
     }
 
@@ -67,11 +68,11 @@ class circularview @JvmOverloads constructor(
                 Log.d(TAG, "action down")
                 innerCx = event.x
                 innerCy = event.y
-                if(Math.pow((100 - innerCx).toDouble(), 2.0) + Math.pow((100 - innerCy).toDouble(),
-                        2.0
-                    ) > 50){
-                    return true
-                }
+//                if(Math.pow((100 - innerCx).toDouble(), 2.0) + Math.pow((100 - innerCy).toDouble(),
+//                        2.0
+//                    ) > 50){
+//                    return true
+//                }
 
 
             }  MotionEvent.ACTION_DOWN  -> {
@@ -87,14 +88,15 @@ class circularview @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP -> {
                 Log.d(TAG, "action up")
-                invalidate()
             }
         }
-
-        // onDraw를 호출
-
+        invalidate()
         return true
     }
 
+
+}
+
+private fun Canvas.drawArc(fl: Float, fl1: Float, fl2: Float, arcPaint: Paint) {
 
 }

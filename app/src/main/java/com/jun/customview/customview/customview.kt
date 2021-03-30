@@ -9,6 +9,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import java.util.*
 
 
 class CircleAlarmTimerView @JvmOverloads constructor(
@@ -271,7 +272,7 @@ class CircleAlarmTimerView @JvmOverloads constructor(
             }
         }
         canvas.restore()
-        // Timer Text
+//         Timer Text
         canvas.save()
         canvas.restore()
         super.onDraw(canvas)

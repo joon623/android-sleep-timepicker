@@ -11,8 +11,9 @@
         android:layout_height="wrap_content"
         tools:text="이름"/>
 
-    <com.jun.customview.customview.circularview
-        android:layout_width="300dp"
+    <com.jun.customview.customview.drawArc
+        android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:layout_gravity="center"
     />
 </LinearLayout>
