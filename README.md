@@ -13,3 +13,6 @@
 ```
  setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 ```
+
+### 03.31
+- division 안 시계 바늘 추가 
