@@ -27,8 +27,10 @@ class drawArc @JvmOverloads constructor(
     companion object {
         private const val TAG = "CircleTimerView"
 
+        //angle
         private const val ANGLE_START_PROGRESS_BACKGROUND = 0
         private const val ANGLE_END_PROGRESS_BACKGROUND = 360
+        // stoke
         private const val DEFAULT_STROKE_WIDTH_DP = 5F
         private const val DEFAULT_STROKE_PG_WIDTH_DP = 10F
         private const val DEFAULT_DIVISION_LENGTH_DP = 8F
@@ -36,9 +38,13 @@ class drawArc @JvmOverloads constructor(
         private const val DEFAULT_LABEL_OFFSET_DP = 36F
         private const val DEFAULT_DIVISION_WIDTH_DP = 2F
         private const val SCALE_LABEL_TEXT_SIZE = 13F
+
+        //color
         private const val DEFAULT_PROGRESS_BACKGROUND_COLOR = "#202633"
         private const val DEFAULT_PROGRESS_COLOR = "#7381a4"
         private const val DEFAULT_DIVISION_COLOR = "#7381a4"
+
+        // ratio
         private const val BLUR_STROKE_RATIO = 3 / 8F
         private const val BLUR_RADIUS_RATIO = 1 / 4F
     }
@@ -248,13 +254,14 @@ class drawArc @JvmOverloads constructor(
             val startY = center.y + (radius - bgStrokeWidth / 2 - divisionOffset) * sin(radians)
             val endY = center.y + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * sin(radians)
             canvas.drawLine(startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat(), divisionPaint)
-
 //            val tmp = value.toString()
 //            textPaint.getTextBounds(tmp, 0, tmp.length, textRect)
 //            val x = center.x + (radius - bgStrokeWidth / 2 - labelOffset) * cos(radians) - textRect.width() / 2
 //            val y = (center.y + (radius - bgStrokeWidth / 2 - labelOffset) * sin(radians) + textRect.height() / 2)
 //            canvas.drawText(tmp, x.toFloat(), y.toFloat(), textPaint)
         }
+
+
     }
 
 

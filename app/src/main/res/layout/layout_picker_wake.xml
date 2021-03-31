@@ -5,9 +5,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:scaleType="center"
+    android:background="@drawable/bg_timer_icon"
     android:src="@drawable/wake_up"
     tools:ignore="ContentDescription"
-    android:background="@color/black"
     >
 
 </ImageView>
