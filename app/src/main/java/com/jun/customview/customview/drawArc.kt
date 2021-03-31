@@ -13,6 +13,8 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import com.jun.customview.R
 import com.jun.customview.Utils
+import com.jun.customview.Utils.Companion.angleBetweenVectors
+import com.jun.customview.Utils.Companion.to_0_720
 import kotlin.math.*
 
 
@@ -55,6 +57,7 @@ class drawArc @JvmOverloads constructor(
     // The progress circle ring background
     private lateinit var progressBackgroundPaint: Paint
     private lateinit var progressPaint: Paint
+    private lateinit var progressMiddlePaint: Paint
     private lateinit var divisionPaint: Paint
     private lateinit var divisionTextPaint: Paint
     private lateinit var divisionSmallTextPaint: Paint
@@ -80,6 +83,8 @@ class drawArc @JvmOverloads constructor(
     private lateinit var wakeLayout: View
     private var sleepAngle = 30.0
     private var wakeAngle = 225.0
+    private var draggingSleep = false
+    private var draggingWake = false
 
     private fun init(@NonNull context: Context, @Nullable attrs: AttributeSet?) {
         // 처리가 필요
@@ -121,6 +126,12 @@ class drawArc @JvmOverloads constructor(
         progressPaint.strokeWidth = progressStrokeWidth.toFloat()
         progressPaint.color = progressColor
         progressPaint.isAntiAlias = true
+
+        progressMiddlePaint = Paint()
+        progressMiddlePaint.style = Paint.Style.STROKE
+        progressMiddlePaint.strokeWidth = progressStrokeWidth.toFloat()
+        progressMiddlePaint.color = progressColor
+        progressMiddlePaint.isAntiAlias = true
 
         divisionPaint = Paint(0)
         divisionPaint.strokeCap = Paint.Cap.BUTT
@@ -200,11 +211,11 @@ class drawArc @JvmOverloads constructor(
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             if (isTouchOnView(sleepLayout, event)) {
-//                draggingSleep = true
+                draggingSleep = true
                 return true
             }
             if (isTouchOnView(wakeLayout, event)) {
-//                draggingWake = true
+                draggingWake = true
                 return true
             }
         }
@@ -216,19 +227,30 @@ class drawArc @JvmOverloads constructor(
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                Log.d(TAG, "action down ${event}")
-
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                Log.d(TAG, "action move ${event}")
-
-                Log.d(TAG, "action move")
+                val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
+                if (draggingSleep) {
+                    val sleepAngleRad = Math.toRadians(sleepAngle)
+                    val diff = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad))
+                    sleepAngle = to_0_720(sleepAngle + diff)
+                    requestLayout()
+//                    notifyChanges()
+                    return true
+                } else if (draggingWake) {
+                    val wakeAngleRad = Math.toRadians(wakeAngle)
+                    val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
+                    wakeAngle = to_0_720(wakeAngle + diff)
+                    requestLayout()
+//                    notifyChanges()
+                    return true
+                }
             }
 
             MotionEvent.ACTION_UP -> {
-
-                Log.d(TAG, "action up ${event}")
+                draggingSleep = false
+                draggingWake = false
             }
         }
         invalidate()
@@ -252,7 +274,6 @@ class drawArc @JvmOverloads constructor(
         circleBounds.bottom = center.y + radius
     }
 
-
     private fun drawProgressBackground(canvas: Canvas) {
         canvas.drawArc(
             circleBounds, ANGLE_START_PROGRESS_BACKGROUND.toFloat(),
@@ -269,6 +290,19 @@ class drawArc @JvmOverloads constructor(
             sweep.toFloat(),
             false, progressPaint!!
         )
+//        canvas.drawLine(
+//            startX.toFloat(),
+//            startY.toFloat(),
+//            endX.toFloat(),
+//            endY.toFloat(),
+//            divisionPaint
+//        )
+//        canvas.drawLine((startAngle/2).toFloat(), (sweep/2).toFloat(),(startAngle).toFloat(),(sweep).toFloat(), progressMiddlePaint)
+
+        val vaa = (startAngle + sweep) /2
+        canvas.drawLine((startAngle.toFloat()), startAngle.toFloat(),(startAngle+ 50).toFloat(),(startAngle+ 50).toFloat(), progressMiddlePaint)
+        canvas.save()
+        canvas.restore()
     }
 
     private fun drawDivisions(canvas: Canvas) {
