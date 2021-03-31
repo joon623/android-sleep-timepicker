@@ -288,9 +288,37 @@ class drawArc @JvmOverloads constructor(
 //                divisionPaint
 //            )
 //        }
+
+//        val mHeight = measuredHeight
+//        val mWidth = measuredWidth
+//        val borderPadding = 10F
+//
+//        for (i in 0..59) {
+//            if (i % 5 == 0) {
+////                divisionPaint.strokeWidth = dp2px(3F).toFloat()
+//                canvas.drawLine(
+//                    (mWidth / 2).toFloat(),
+//                    dp2px(borderPadding).toFloat(),
+//                    (mWidth / 2).toFloat(),
+//                    dp2px(23F).toFloat(),
+//                    divisionPaint
+//                )
+//            } else {
+////                divisionPaint.strokeWidth = dp2px(6F).toFloat()
+//                canvas.drawLine(
+//                    (mWidth / 2).toFloat(),
+//                    dp2px(borderPadding).toFloat(),
+//                    (mWidth / 2).toFloat(),
+//                    dp2px(20F).toFloat(),
+//                    divisionPaint
+//                )
+//            }
+//            //一共绘制60个刻度,每次旋转360°/60
+//            canvas.rotate((360 / 60).toFloat(), (mWidth / 2).toFloat(), (mHeight / 2).toFloat())
+//        }
+
         val divisionAngle = 360 / 60
         for (index in 0..59) {
-            Log.d(TAG, index.toString())
             val angle = (divisionAngle * index) - 90
             val radians = Math.toRadians(angle.toDouble())
             val bgStrokeWidth = progressBackgroundPaint.strokeWidth
@@ -304,28 +332,39 @@ class drawArc @JvmOverloads constructor(
                 center.y + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * sin(
                     radians
                 )
-            if (index % 5 == 0) {
-                divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP) * 2
-                canvas.drawLine(
-                    startX.toFloat(),
-                    startY.toFloat(),
-                    endX.toFloat(),
-                    endY.toFloat(),
-                    divisionPaint
-                )
-            } else {
-                divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
-                canvas.drawLine(
-                    startX.toFloat(),
-                    startY.toFloat(),
-                    endX.toFloat(),
-                    endY.toFloat(),
-                    divisionPaint
-                )
+
+            when {
+                index == 0 -> {
+                    divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
+                    canvas.drawLine(
+                        startX.toFloat(),
+                        startY.toFloat(),
+                        endX.toFloat(),
+                        endY.toFloat(),
+                        divisionPaint
+                    )
+                }
+                index % 5 == 0 -> {
+                    divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP) * 2
+                    canvas.drawLine(
+                        startX.toFloat(),
+                        startY.toFloat(),
+                        endX.toFloat(),
+                        endY.toFloat(),
+                        divisionPaint
+                    )
+                }
+                else -> {
+                    divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
+                    canvas.drawLine(
+                        startX.toFloat(),
+                        startY.toFloat(),
+                        endX.toFloat(),
+                        endY.toFloat(),
+                        divisionPaint
+                    )
+                }
             }
-
-            canvas.rotate(360F, startX.toFloat(), startY.toFloat())
-
         }
 
         // text
