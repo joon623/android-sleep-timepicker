@@ -70,7 +70,8 @@ class drawArc @JvmOverloads constructor(
     private var radius: Float = 0F
     private var center = Point(0, 0)
     private var divisionWidth = 0
-//    private val hourLabels = listOf(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+
+    //    private val hourLabels = listOf(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
     private val hourLabels = listOf(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
     private val hourText = listOf("오전 12시", "오전 6시", "오후 12시", "오후 6시")
 
@@ -265,58 +266,6 @@ class drawArc @JvmOverloads constructor(
     }
 
     private fun drawDivisions(canvas: Canvas) {
-//        val divisionAngle = 360 / hourLabels.size
-//        hourLabels.forEachIndexed { index, value ->
-//            val angle = (divisionAngle * index) - 90
-//            val radians = Math.toRadians(angle.toDouble())
-//            val bgStrokeWidth = progressBackgroundPaint.strokeWidth
-//            val startX = center.x + (radius - bgStrokeWidth / 2 - divisionOffset) * cos(radians)
-//            val endX =
-//                center.x + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * cos(
-//                    radians
-//                )
-//            val startY = center.y + (radius - bgStrokeWidth / 2 - divisionOffset) * sin(radians)
-//            val endY =
-//                center.y + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * sin(
-//                    radians
-//                )
-//            canvas.drawLine(
-//                startX.toFloat(),
-//                startY.toFloat(),
-//                endX.toFloat(),
-//                endY.toFloat(),
-//                divisionPaint
-//            )
-//        }
-
-//        val mHeight = measuredHeight
-//        val mWidth = measuredWidth
-//        val borderPadding = 10F
-//
-//        for (i in 0..59) {
-//            if (i % 5 == 0) {
-////                divisionPaint.strokeWidth = dp2px(3F).toFloat()
-//                canvas.drawLine(
-//                    (mWidth / 2).toFloat(),
-//                    dp2px(borderPadding).toFloat(),
-//                    (mWidth / 2).toFloat(),
-//                    dp2px(23F).toFloat(),
-//                    divisionPaint
-//                )
-//            } else {
-////                divisionPaint.strokeWidth = dp2px(6F).toFloat()
-//                canvas.drawLine(
-//                    (mWidth / 2).toFloat(),
-//                    dp2px(borderPadding).toFloat(),
-//                    (mWidth / 2).toFloat(),
-//                    dp2px(20F).toFloat(),
-//                    divisionPaint
-//                )
-//            }
-//            //一共绘制60个刻度,每次旋转360°/60
-//            canvas.rotate((360 / 60).toFloat(), (mWidth / 2).toFloat(), (mHeight / 2).toFloat())
-//        }
-
         val divisionAngle = 360 / 60
         for (index in 0..59) {
             val angle = (divisionAngle * index) - 90
@@ -333,18 +282,7 @@ class drawArc @JvmOverloads constructor(
                     radians
                 )
 
-            when {
-                index == 0 -> {
-                    divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
-                    canvas.drawLine(
-                        startX.toFloat(),
-                        startY.toFloat(),
-                        endX.toFloat(),
-                        endY.toFloat(),
-                        divisionPaint
-                    )
-                }
-                index % 5 == 0 -> {
+            if ((index + 1) % 5 == 0) {
                     divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP) * 2
                     canvas.drawLine(
                         startX.toFloat(),
@@ -353,41 +291,17 @@ class drawArc @JvmOverloads constructor(
                         endY.toFloat(),
                         divisionPaint
                     )
-                }
-                else -> {
-                    divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
-                    canvas.drawLine(
-                        startX.toFloat(),
-                        startY.toFloat(),
-                        endX.toFloat(),
-                        endY.toFloat(),
-                        divisionPaint
-                    )
-                }
+            } else {
+                divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
+                canvas.drawLine(
+                    startX.toFloat(),
+                    startY.toFloat(),
+                    endX.toFloat(),
+                    endY.toFloat(),
+                    divisionPaint
+                )
             }
         }
-
-        // text
-//        val divisionTextAngle = 360 / hourText.size
-//        hourText.forEachIndexed { index, value ->
-//            val angle = (divisionTextAngle * index) - 90
-//            val radians = Math.toRadians(angle.toDouble())
-//            val bgStrokeWidth = divisionTextPaint.strokeWidth
-//            val startX = center.x + (radius - bgStrokeWidth / 2 - divisionOffset) * cos(radians)
-//            val endX =
-//                center.x + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * cos(
-//                    radians
-//                )
-//            val startY = center.y + (radius - bgStrokeWidth / 2 - divisionOffset) * sin(radians)
-//            val endY =
-//                center.y + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * sin(
-//                    radians
-//                )
-//            canvas.drawText(value, startX.toFloat(), startY.toFloat(), divisionTextPaint)
-//            Log.d(TAG, "forEach 11 ")
-//        }
-
-
     }
 
 
