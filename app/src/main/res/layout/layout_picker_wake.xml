@@ -5,7 +5,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:scaleType="center"
-    android:src="@drawable/icon_wakeup_controller"
-    tools:ignore="ContentDescription">
+    android:src="@drawable/wake_up"
+    tools:ignore="ContentDescription"
+    android:background="@color/black"
+    >
 
 </ImageView>

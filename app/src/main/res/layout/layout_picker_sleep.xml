@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:scaleType="center"
-    android:src="@drawable/icon_sleep_controller"
+    android:src="@drawable/goto_bed"
     tools:ignore="ContentDescription">
 
 </ImageView>

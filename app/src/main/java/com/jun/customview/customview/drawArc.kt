@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import com.jun.customview.R
+import com.jun.customview.Utils
 import kotlin.math.*
 
 
@@ -128,24 +129,6 @@ class drawArc @JvmOverloads constructor(
         requestLayout()
     }
 
-    override fun onDraw(canvas: Canvas) {
-
-        canvas.drawArc(
-            circleBounds, ANGLE_START_PROGRESS_BACKGROUND.toFloat(),
-            ANGLE_END_PROGRESS_BACKGROUND.toFloat(),
-            false, progressBackgroundPaint!!
-        )
-
-        canvas.drawArc(
-            circleBounds, ANGLE_START_PROGRESS_BACKGROUND.toFloat(),
-            290.toFloat(),
-            false, progressPaint!!
-        )
-        drawDivisions(canvas)
-
-        super.onDraw(canvas)
-    }
-
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         layoutView(sleepLayout, sleepAngle)
         layoutView(wakeLayout, wakeAngle)
@@ -195,18 +178,22 @@ class drawArc @JvmOverloads constructor(
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val x = event.x
         val y = event.y
-
         Log.d(TAG, event.actionMasked.toString())
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                Log.d(TAG, "action down ${event}")
+
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
+                Log.d(TAG, "action move ${event}")
+
                 Log.d(TAG, "action move")
             }
 
             MotionEvent.ACTION_UP -> {
-                Log.d(TAG, "action up")
+
+                Log.d(TAG, "action up ${event}")
             }
         }
         invalidate()
@@ -230,11 +217,30 @@ class drawArc @JvmOverloads constructor(
         circleBounds.bottom = center.y + radius
     }
 
+
+    private fun drawProgressBackground(canvas: Canvas) {
+        canvas.drawArc(
+            circleBounds, ANGLE_START_PROGRESS_BACKGROUND.toFloat(),
+            ANGLE_END_PROGRESS_BACKGROUND.toFloat(),
+            false, progressBackgroundPaint!!
+        )
+    }
+
+    private fun drawProgress(canvas: Canvas) {
+        val startAngle = -sleepAngle.toFloat()
+        val sweep = Utils.to_0_360(sleepAngle - wakeAngle).toFloat()
+        canvas.drawArc(
+            circleBounds, startAngle.toFloat(),
+            sweep.toFloat(),
+            false, progressPaint!!
+        )
+    }
+
     private fun drawDivisions(canvas: Canvas) {
         val divisionAngle = 360 / hourLabels.size
         hourLabels.forEachIndexed { index, value ->
             val angle = (divisionAngle * index) - 90
-            Log.d(TAG, "drawDivisions $angle $value")
+//            Log.d(TAG, "drawDivisions $angle $value")
             val radians = Math.toRadians(angle.toDouble())
             val bgStrokeWidth = progressBackgroundPaint.strokeWidth
             val startX = center.x + (radius - bgStrokeWidth / 2 - divisionOffset) * cos(radians)
@@ -251,6 +257,7 @@ class drawArc @JvmOverloads constructor(
         }
     }
 
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val measuredWidth = View.MeasureSpec.getSize(widthMeasureSpec)
@@ -261,5 +268,12 @@ class drawArc @JvmOverloads constructor(
         setMeasuredDimension(smallestSide, smallestSide)
     }
 
+    override fun onDraw(canvas: Canvas) {
+        drawProgressBackground(canvas)
+        drawProgress(canvas)
+        drawDivisions(canvas)
+
+        super.onDraw(canvas)
+    }
 
 }
