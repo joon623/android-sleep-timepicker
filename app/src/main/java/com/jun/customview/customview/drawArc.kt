@@ -403,44 +403,9 @@ class drawArc @JvmOverloads constructor(
                         divisionSmallTextPaint
                     )
                 }
-
-                35 -> {
-
-                }
-
-                40 -> {
-
-                }
-
-                50 -> {
-
-                }
-
-                55 -> {
-
-                }
             }
         }
-
-//        hourLabels.forEachIndexed { index, value ->
-//            Log.d(TAG, value.toString())
-//            val angle = (divisionAngle * index) - 90
-//            val radians = Math.toRadians(angle.toDouble())
-//            val bgStrokeWidth = progressBackgroundPaint.strokeWidth
-//
-//            val tmp = value.toString()
-//            divisionPaint.getTextBounds(tmp, 0, tmp.length, textRect)
-//            val x = center.x + (radius - bgStrokeWidth / 2 - labelOffset) * cos(radians) - textRect.width() / 2
-//            val y = (center.y + (radius - bgStrokeWidth / 2 - labelOffset) * sin(radians) + textRect.height() / 2)
-//            canvas.drawText(tmp, x.toFloat(), y.toFloat(), textPaint)
-//        }
-
     }
-
-    private fun divisionText(canvas: Canvas) {
-
-    }
-
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
