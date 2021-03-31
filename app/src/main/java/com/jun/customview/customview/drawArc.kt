@@ -71,7 +71,6 @@ class drawArc @JvmOverloads constructor(
     private var center = Point(0, 0)
     private var divisionWidth = 0
 
-    //    private val hourLabels = listOf(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
     private val hourLabels = listOf(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
     private val hourText = listOf("오전 12시", "오전 6시", "오후 12시", "오후 6시")
 
@@ -302,6 +301,32 @@ class drawArc @JvmOverloads constructor(
                 )
             }
         }
+
+//        val divisionAngleB = 360 / 12
+//        for (index in 0..11) {
+//            //Draw numbers, a total of 12
+//            val angle = (divisionAngle * index) - 90
+//            val radians = Math.toRadians(angle.toDouble())
+//            val bgStrokeWidth = progressBackgroundPaint.strokeWidth
+//            val startX = center.x + (radius - bgStrokeWidth / 2 - divisionOffset) * cos(radians)
+//            val endX =
+//                center.x + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * cos(
+//                    radians
+//                )
+//            val startY = center.y + (radius - bgStrokeWidth / 2 - divisionOffset) * sin(radians)
+//            val endY =
+//                center.y + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * sin(
+//                    radians
+//                )
+//            canvas.drawText(
+//                if (index == 0) "12" else index.toString(),
+//                (startX / 2).toFloat(),
+//                dp2px(3F).toFloat(),
+//                divisionPaint
+//            )
+//        }
+
+
     }
 
 
