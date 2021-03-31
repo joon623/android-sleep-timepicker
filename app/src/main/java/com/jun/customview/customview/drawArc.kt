@@ -57,9 +57,11 @@ class drawArc @JvmOverloads constructor(
     private lateinit var progressPaint: Paint
     private lateinit var divisionPaint: Paint
     private lateinit var divisionTextPaint: Paint
+    private lateinit var divisionSmallTextPaint: Paint
 
 
     private var divisionOffset = 0
+    private var labelOffset = 0
     private var divisionLength = 0
     private var divisionTextSize = 0
 
@@ -71,8 +73,8 @@ class drawArc @JvmOverloads constructor(
     private var center = Point(0, 0)
     private var divisionWidth = 0
 
-    private val hourLabels = listOf(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-    private val hourText = listOf("오전 12시", "오전 6시", "오후 12시", "오후 6시")
+    private val textRect = Rect()
+    private var labelColor = Color.WHITE
 
     private lateinit var sleepLayout: View
     private lateinit var wakeLayout: View
@@ -105,19 +107,20 @@ class drawArc @JvmOverloads constructor(
             val a = context.obtainStyledAttributes(attrs, R.styleable.customviewpractice)
             sleepLayoutId = a.getResourceId(R.styleable.customviewpractice_sleepLayoutId, 0)
             wakeLayoutId = a.getResourceId(R.styleable.customviewpractice_wakeLayoutId, 0)
+            labelColor = a.getColor(R.styleable.customviewpractice_labelColor, progressColor)
         }
 
         progressBackgroundPaint = Paint()
-        progressBackgroundPaint?.style = Paint.Style.STROKE
-        progressBackgroundPaint?.strokeWidth = progressBgStrokeWidth.toFloat()
-        progressBackgroundPaint?.color = progressBackgroundColor
-        progressBackgroundPaint?.isAntiAlias = true
+        progressBackgroundPaint.style = Paint.Style.STROKE
+        progressBackgroundPaint.strokeWidth = progressBgStrokeWidth.toFloat()
+        progressBackgroundPaint.color = progressBackgroundColor
+        progressBackgroundPaint.isAntiAlias = true
 
         progressPaint = Paint()
-        progressPaint?.style = Paint.Style.STROKE
-        progressPaint?.strokeWidth = progressStrokeWidth.toFloat()
-        progressPaint?.color = progressColor
-        progressPaint?.isAntiAlias = true
+        progressPaint.style = Paint.Style.STROKE
+        progressPaint.strokeWidth = progressStrokeWidth.toFloat()
+        progressPaint.color = progressColor
+        progressPaint.isAntiAlias = true
 
         divisionPaint = Paint(0)
         divisionPaint.strokeCap = Paint.Cap.BUTT
@@ -130,6 +133,11 @@ class drawArc @JvmOverloads constructor(
         divisionTextPaint.textSize = divisionTextSize.toFloat()
         divisionTextPaint.color = divisionTextColor
         divisionTextPaint.isAntiAlias = true
+
+        divisionSmallTextPaint = Paint()
+        divisionSmallTextPaint.isAntiAlias = true
+        divisionSmallTextPaint.textSize = sp2Px(20F).toFloat()
+        divisionSmallTextPaint.color = divisionColor
 
 
         val inflater = LayoutInflater.from(context)
@@ -206,7 +214,6 @@ class drawArc @JvmOverloads constructor(
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val x = event.x
         val y = event.y
-        Log.d(TAG, event.actionMasked.toString())
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 Log.d(TAG, "action down ${event}")
@@ -281,15 +288,16 @@ class drawArc @JvmOverloads constructor(
                     radians
                 )
 
+
             if ((index + 1) % 5 == 0) {
-                    divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP) * 2
-                    canvas.drawLine(
-                        startX.toFloat(),
-                        startY.toFloat(),
-                        endX.toFloat(),
-                        endY.toFloat(),
-                        divisionPaint
-                    )
+                divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP) * 2
+                canvas.drawLine(
+                    startX.toFloat(),
+                    startY.toFloat(),
+                    endX.toFloat(),
+                    endY.toFloat(),
+                    divisionPaint
+                )
             } else {
                 divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
                 canvas.drawLine(
@@ -300,32 +308,136 @@ class drawArc @JvmOverloads constructor(
                     divisionPaint
                 )
             }
+
+            when (index) {
+                0 -> {
+                    canvas.drawText(
+                        "오후 12시",
+                        (startX - 50).toFloat(),
+                        (startY + 60).toFloat(),
+                        divisionTextPaint
+                    )
+                }
+                15 -> {
+                    canvas.drawText(
+                        "오전 6시",
+                        (endX - 90).toFloat(),
+                        (endY + 15).toFloat(),
+                        divisionTextPaint
+                    )
+                }
+                30 -> {
+                    canvas.drawText(
+                        "오후 12시",
+                        (startX - 50).toFloat(),
+                        (startY - 50).toFloat(),
+                        divisionTextPaint
+                    )
+                }
+                45 -> {
+                    canvas.drawText(
+                        "오후 6시",
+                        (startX + 40).toFloat(),
+                        (endY + 15).toFloat(),
+                        divisionTextPaint
+                    )
+                }
+
+
+                5 -> {
+                    canvas.drawText(
+                        "2",
+                        (endX - 20).toFloat(),
+                        (endY + 40).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                    canvas.drawText(
+                        "10",
+                        (endX - 250).toFloat(),
+                        (endY + 40).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                }
+
+                10 -> {
+                    canvas.drawText(
+                        "4",
+                        (endX - 30).toFloat(),
+                        (endY + 30).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                    canvas.drawText(
+                        "8",
+                        (endX - 400).toFloat(),
+                        (endY + 30).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                }
+
+                20 -> {
+                    canvas.drawText(
+                        "8",
+                        (endX - 30).toFloat(),
+                        (endY).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                    canvas.drawText(
+                        "4",
+                        (endX - 400).toFloat(),
+                        (endY).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                }
+
+                25 -> {
+                    canvas.drawText(
+                        "2",
+                        (endX - 20).toFloat(),
+                        (endY - 15).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                    canvas.drawText(
+                        "10",
+                        (endX - 250).toFloat(),
+                        (endY - 15).toFloat(),
+                        divisionSmallTextPaint
+                    )
+                }
+
+                35 -> {
+
+                }
+
+                40 -> {
+
+                }
+
+                50 -> {
+
+                }
+
+                55 -> {
+
+                }
+            }
         }
 
-//        val divisionAngleB = 360 / 12
-//        for (index in 0..11) {
-//            //Draw numbers, a total of 12
+//        hourLabels.forEachIndexed { index, value ->
+//            Log.d(TAG, value.toString())
 //            val angle = (divisionAngle * index) - 90
 //            val radians = Math.toRadians(angle.toDouble())
 //            val bgStrokeWidth = progressBackgroundPaint.strokeWidth
-//            val startX = center.x + (radius - bgStrokeWidth / 2 - divisionOffset) * cos(radians)
-//            val endX =
-//                center.x + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * cos(
-//                    radians
-//                )
-//            val startY = center.y + (radius - bgStrokeWidth / 2 - divisionOffset) * sin(radians)
-//            val endY =
-//                center.y + (radius - bgStrokeWidth / 2 - divisionOffset - divisionLength) * sin(
-//                    radians
-//                )
-//            canvas.drawText(
-//                if (index == 0) "12" else index.toString(),
-//                (startX / 2).toFloat(),
-//                dp2px(3F).toFloat(),
-//                divisionPaint
-//            )
+//
+//            val tmp = value.toString()
+//            divisionPaint.getTextBounds(tmp, 0, tmp.length, textRect)
+//            val x = center.x + (radius - bgStrokeWidth / 2 - labelOffset) * cos(radians) - textRect.width() / 2
+//            val y = (center.y + (radius - bgStrokeWidth / 2 - labelOffset) * sin(radians) + textRect.height() / 2)
+//            canvas.drawText(tmp, x.toFloat(), y.toFloat(), textPaint)
 //        }
 
+    }
+
+    private fun divisionText(canvas: Canvas) {
 
     }
 

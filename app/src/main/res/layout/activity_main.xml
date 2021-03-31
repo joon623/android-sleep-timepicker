@@ -17,5 +17,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:sleepLayoutId="@layout/layout_picker_sleep"
         app:wakeLayoutId="@layout/layout_picker_wake"
+        app:labelColor="#7381a4"
     />
 </androidx.constraintlayout.widget.ConstraintLayout>
