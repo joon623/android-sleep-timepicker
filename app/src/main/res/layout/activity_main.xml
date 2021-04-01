@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#263043">
 
-    <com.jun.customview.customview.drawArc
+    <com.jun.customview.customview.SleepTimePicker
         android:id="@+id/timePicker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -19,4 +19,76 @@
         app:wakeLayoutId="@layout/layout_picker_wake"
         app:labelColor="#7381a4"
     />
+
+
+    <LinearLayout
+        android:id="@+id/llBedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="41dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/timePicker"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="15dp"
+        >
+
+        <TextView
+            android:id="@+id/tvBedTimeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="28dp"
+            android:drawablePadding="8dp"
+            android:letterSpacing="0.2"
+            android:text="bedtime"
+            android:textColor="@color/white"
+            android:textSize="10sp"/>
+
+
+        <TextView
+            android:id="@+id/tvBedTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:letterSpacing="0.06"
+            android:lineSpacingExtra="6sp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            tools:text="12:15 PM"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llWakeUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="30dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/timePicker"
+        app:layout_constraintRight_toRightOf="parent"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:letterSpacing="0.2"
+            android:text="wake_up"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            tools:ignore="SmallSp"/>
+
+        <TextView
+            android:id="@+id/tvWakeTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:letterSpacing="0.06"
+            android:lineSpacingExtra="6sp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            tools:text="7:45 AM"/>
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

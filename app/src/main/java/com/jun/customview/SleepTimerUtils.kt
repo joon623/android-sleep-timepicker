@@ -4,7 +4,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-class Utils {
+class SleepTimerUtils {
     companion object {
         fun to_0_360(angle: Double): Double {
             var result = angle % 360

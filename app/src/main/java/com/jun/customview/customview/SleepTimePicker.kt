@@ -2,8 +2,8 @@ package com.jun.customview.customview
 
 import android.content.Context
 import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -11,14 +11,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
+import androidx.annotation.RequiresApi
 import com.jun.customview.R
-import com.jun.customview.Utils
-import com.jun.customview.Utils.Companion.angleBetweenVectors
-import com.jun.customview.Utils.Companion.to_0_720
+import com.jun.customview.SleepTimerUtils
+import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
+import com.jun.customview.SleepTimerUtils.Companion.angleToMins
+import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
+import com.jun.customview.SleepTimerUtils.Companion.to_0_720
+import java.time.LocalTime
 import kotlin.math.*
 
 
-class drawArc @JvmOverloads constructor(
+class SleepTimePicker @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr) {
 
@@ -236,14 +240,14 @@ class drawArc @JvmOverloads constructor(
                     val diff = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad))
                     sleepAngle = to_0_720(sleepAngle + diff)
                     requestLayout()
-//                    notifyChanges()
+                    notifyChanges()
                     return true
                 } else if (draggingWake) {
                     val wakeAngleRad = Math.toRadians(wakeAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
                     wakeAngle = to_0_720(wakeAngle + diff)
                     requestLayout()
-//                    notifyChanges()
+                    notifyChanges()
                     return true
                 }
             }
@@ -284,25 +288,12 @@ class drawArc @JvmOverloads constructor(
 
     private fun drawProgress(canvas: Canvas) {
         val startAngle = -sleepAngle.toFloat()
-        val sweep = Utils.to_0_360(sleepAngle - wakeAngle).toFloat()
+        val sweep = SleepTimerUtils.to_0_360(sleepAngle - wakeAngle).toFloat()
         canvas.drawArc(
             circleBounds, startAngle.toFloat(),
             sweep.toFloat(),
             false, progressPaint!!
         )
-//        canvas.drawLine(
-//            startX.toFloat(),
-//            startY.toFloat(),
-//            endX.toFloat(),
-//            endY.toFloat(),
-//            divisionPaint
-//        )
-//        canvas.drawLine((startAngle/2).toFloat(), (sweep/2).toFloat(),(startAngle).toFloat(),(sweep).toFloat(), progressMiddlePaint)
-
-        val vaa = (startAngle + sweep) /2
-        canvas.drawLine((startAngle.toFloat()), startAngle.toFloat(),(startAngle+ 50).toFloat(),(startAngle+ 50).toFloat(), progressMiddlePaint)
-        canvas.save()
-        canvas.restore()
     }
 
     private fun drawDivisions(canvas: Canvas) {
@@ -440,6 +431,32 @@ class drawArc @JvmOverloads constructor(
             }
         }
     }
+
+    fun getBedTime() = computeBedTime()
+
+    fun getWakeTime() = computeWakeTime()
+
+
+
+    var listener: ((bedTime: LocalTime, wakeTime: LocalTime) -> Unit)? = null
+    private val stepMinutes = 15
+
+    private fun notifyChanges() {
+        val computeBedTime = computeBedTime()
+        val computeWakeTime = computeWakeTime()
+        listener?.invoke(computeBedTime, computeWakeTime)
+    }
+
+    private fun computeBedTime(): LocalTime {
+        val bedMins = snapMinutes(angleToMins(sleepAngle), stepMinutes)
+        return LocalTime.of((bedMins / 60) % 24, bedMins % 60)
+    }
+
+    private fun computeWakeTime(): LocalTime {
+        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
+        return LocalTime.of((wakeMins / 60) % 24, wakeMins % 60)
+    }
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
