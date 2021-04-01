@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -15,8 +16,9 @@ import androidx.annotation.RequiresApi
 import com.jun.customview.R
 import com.jun.customview.SleepTimerUtils
 import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
-import com.jun.customview.SleepTimerUtils.Companion.angleToMins
+import com.jun.customview.SleepTimerUtils.Companion.angleToMinsTest
 import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
+import com.jun.customview.SleepTimerUtils.Companion.to_0_360
 import com.jun.customview.SleepTimerUtils.Companion.to_0_720
 import org.threeten.bp.LocalTime
 import kotlin.math.*
@@ -86,7 +88,7 @@ class SleepTimePicker @JvmOverloads constructor(
     private lateinit var sleepLayout: View
     private lateinit var wakeLayout: View
     private var sleepAngle = 30.0
-    private var wakeAngle = 225.0
+    private var wakeAngle = 60.0
     private var draggingSleep = false
     private var draggingWake = false
 
@@ -234,18 +236,20 @@ class SleepTimePicker @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
+                Log.d(TAG, "wake ${wakeAngle.toString()}")
+//                Log.d(TAG, "sleep ${sleepAngle.toString()}")
                 val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
                 if (draggingSleep) {
                     val sleepAngleRad = Math.toRadians(sleepAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad))
-                    sleepAngle = to_0_720(sleepAngle + diff)
+                    sleepAngle = to_0_360(sleepAngle + diff)
                     requestLayout()
                     notifyChanges()
                     return true
                 } else if (draggingWake) {
                     val wakeAngleRad = Math.toRadians(wakeAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
-                    wakeAngle = to_0_720(wakeAngle + diff)
+                    wakeAngle = to_0_360(wakeAngle + diff)
                     requestLayout()
                     notifyChanges()
                     return true
@@ -447,12 +451,12 @@ class SleepTimePicker @JvmOverloads constructor(
     }
 
     private fun computeBedTime(): LocalTime {
-        val bedMins = snapMinutes(angleToMins(sleepAngle), stepMinutes)
+        val bedMins = snapMinutes(angleToMinsTest(sleepAngle), stepMinutes)
         return LocalTime.of((bedMins / 60) % 24, bedMins % 60)
     }
 
     private fun computeWakeTime(): LocalTime {
-        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
+        val wakeMins = snapMinutes(angleToMinsTest(wakeAngle), stepMinutes)
         return LocalTime.of((wakeMins / 60) % 24, wakeMins % 60)
     }
 
