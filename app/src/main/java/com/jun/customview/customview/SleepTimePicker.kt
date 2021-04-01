@@ -337,7 +337,7 @@ class SleepTimePicker @JvmOverloads constructor(
             when (index) {
                 0 -> {
                     canvas.drawText(
-                        "오후 12시",
+                        "오전 12시",
                         (startX - 50).toFloat(),
                         (startY + 60).toFloat(),
                         divisionTextPaint
@@ -439,7 +439,7 @@ class SleepTimePicker @JvmOverloads constructor(
 
 
     var listener: ((bedTime: LocalTime, wakeTime: LocalTime) -> Unit)? = null
-    private val stepMinutes = 15
+    private val stepMinutes = 5
 
     private fun notifyChanges() {
         val computeBedTime = computeBedTime()
@@ -474,5 +474,4 @@ class SleepTimePicker @JvmOverloads constructor(
         drawProgress(canvas)
         super.onDraw(canvas)
     }
-
 }
