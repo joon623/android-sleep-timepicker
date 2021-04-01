@@ -18,7 +18,7 @@ import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
 import com.jun.customview.SleepTimerUtils.Companion.angleToMins
 import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
 import com.jun.customview.SleepTimerUtils.Companion.to_0_720
-import java.time.LocalTime
+import org.threeten.bp.LocalTime
 import kotlin.math.*
 
 
@@ -436,8 +436,7 @@ class SleepTimePicker @JvmOverloads constructor(
 
     fun getWakeTime() = computeWakeTime()
 
-
-
+    // 나중에 위로 올리기
     var listener: ((bedTime: LocalTime, wakeTime: LocalTime) -> Unit)? = null
     private val stepMinutes = 5
 
@@ -457,13 +456,11 @@ class SleepTimePicker @JvmOverloads constructor(
         return LocalTime.of((wakeMins / 60) % 24, wakeMins % 60)
     }
 
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val measuredWidth = View.MeasureSpec.getSize(widthMeasureSpec)
         val measuredHeight = View.MeasureSpec.getSize(heightMeasureSpec)
         measureChildren(widthMeasureSpec, heightMeasureSpec)
-
         val smallestSide = Math.min(measuredWidth, measuredHeight)
         setMeasuredDimension(smallestSide, smallestSide)
     }
