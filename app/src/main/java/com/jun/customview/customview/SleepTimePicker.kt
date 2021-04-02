@@ -236,7 +236,7 @@ class SleepTimePicker @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                Log.d(TAG, "wake ${wakeAngle.toString()}")
+//                Log.d(TAG, "wake ${wakeAngle.toString()}")
 //                Log.d(TAG, "sleep ${sleepAngle.toString()}")
                 val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
                 if (draggingSleep) {
@@ -420,13 +420,13 @@ class SleepTimePicker @JvmOverloads constructor(
 
                 25 -> {
                     canvas.drawText(
-                        "2",
+                        "10",
                         (endX - 20).toFloat(),
                         (endY - 15).toFloat(),
                         divisionSmallTextPaint
                     )
                     canvas.drawText(
-                        "10",
+                        "2",
                         (endX - 250).toFloat(),
                         (endY - 15).toFloat(),
                         divisionSmallTextPaint
@@ -440,6 +440,17 @@ class SleepTimePicker @JvmOverloads constructor(
 
     fun getWakeTime() = computeWakeTime()
 
+    private fun computeBedTime(): LocalTime {
+        val bedMins = snapMinutes(angleToMinsTest(sleepAngle), stepMinutes)
+        return LocalTime.of((bedMins / 60) % 24, bedMins % 60)
+    }
+
+    private fun computeWakeTime(): LocalTime {
+        val wakeMins = snapMinutes(angleToMinsTest(wakeAngle), stepMinutes)
+        Log.d(TAG,"wakeMins :: ${wakeMins.toString()}")
+        return LocalTime.of((wakeMins / 60) % 24, wakeMins % 60)
+    }
+
     // 나중에 위로 올리기
     var listener: ((bedTime: LocalTime, wakeTime: LocalTime) -> Unit)? = null
     private val stepMinutes = 5
@@ -448,16 +459,6 @@ class SleepTimePicker @JvmOverloads constructor(
         val computeBedTime = computeBedTime()
         val computeWakeTime = computeWakeTime()
         listener?.invoke(computeBedTime, computeWakeTime)
-    }
-
-    private fun computeBedTime(): LocalTime {
-        val bedMins = snapMinutes(angleToMinsTest(sleepAngle), stepMinutes)
-        return LocalTime.of((bedMins / 60) % 24, bedMins % 60)
-    }
-
-    private fun computeWakeTime(): LocalTime {
-        val wakeMins = snapMinutes(angleToMinsTest(wakeAngle), stepMinutes)
-        return LocalTime.of((wakeMins / 60) % 24, wakeMins % 60)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

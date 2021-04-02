@@ -27,7 +27,7 @@ class SleepTimerUtils {
 //        }
 
         fun angleToMinsTest(angle: Double): Int {
-            return (((to_0_720(90 - angle)) / 360) * 12 * 60).toInt()
+            return (((to_0_360(90 - angle)) / 360) * 12 * 60).toInt()
         }
 
         /**

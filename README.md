@@ -57,3 +57,17 @@
 
 ## 04.01 
 - 잔디밭 에러 해결 
+- ThreeTen Android Backport 라이브러리 추가 
+```
+dependencies {
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.3.0'
+}
+```
+
+```
+    override onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    AndroidThreeTen.init(this);
+}
+
+```
