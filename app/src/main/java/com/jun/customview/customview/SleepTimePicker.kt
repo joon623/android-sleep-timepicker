@@ -442,13 +442,12 @@ class SleepTimePicker @JvmOverloads constructor(
 
     private fun computeBedTime(): LocalTime {
         val bedMins = snapMinutes(angleToMinsTest(sleepAngle), stepMinutes)
-        return LocalTime.of((bedMins / 60) % 24, bedMins % 60)
+        return LocalTime.of((bedMins / 30) % 12, bedMins % 60)
     }
 
     private fun computeWakeTime(): LocalTime {
         val wakeMins = snapMinutes(angleToMinsTest(wakeAngle), stepMinutes)
-        Log.d(TAG,"wakeMins :: ${wakeMins.toString()}")
-        return LocalTime.of((wakeMins / 60) % 24, wakeMins % 60)
+        return LocalTime.of((wakeMins / 30) % 12, wakeMins % 60)
     }
 
     // 나중에 위로 올리기
