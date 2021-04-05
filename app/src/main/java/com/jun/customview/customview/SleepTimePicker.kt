@@ -233,8 +233,6 @@ class SleepTimePicker @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-//                Log.d(TAG, "wake ${wakeAngle.toString()}")
-//                Log.d(TAG, "sleep ${sleepAngle.toString()}")
                 val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
                 if (draggingSleep) {
                     val sleepAngleRad = Math.toRadians(sleepAngle)
@@ -437,6 +435,10 @@ class SleepTimePicker @JvmOverloads constructor(
 
     fun getWakeTime() = computeWakeTime()
 
+    fun getWakeMeridiem() = checkWakeMeridiem()
+
+    fun getBedMeridiem() = checkBedMeridiem()
+
     private fun computeBedTime(): LocalTime {
         val bedMins = snapMinutes(angleToMins(sleepAngle), stepMinutes)
         return LocalTime.of((bedMins / 30) % 12, bedMins % 60)
@@ -447,23 +449,15 @@ class SleepTimePicker @JvmOverloads constructor(
         return LocalTime.of((wakeMins / 30) % 12, wakeMins % 60)
     }
 
-//    fun checkWakeMeridiem(): String {
-//        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
-//        return if( wakeMins in 1..360) {
-//            "오전"
-//        } else {
-//            "오후"
-//        }
-//    }
-//
-//    private fun checkBedMeridiem(): String {
-//        val bedMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
-//        return if( bedMins in 1..360) {
-//            "오전"
-//        } else {
-//            "오후"
-//        }
-//   }
+    private fun checkWakeMeridiem(): String {
+        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
+        return if( wakeMins in 1..360) "오전" else "오후"
+    }
+
+    private fun checkBedMeridiem(): String {
+        val bedMins = snapMinutes(angleToMins(sleepAngle), stepMinutes)
+        return if( bedMins in 1..360) "오전" else "오후"
+   }
 
     // 나중에 위로 올리기
     var listener: ((bedTime: LocalTime, wakeTime: LocalTime) -> Unit)? = null
