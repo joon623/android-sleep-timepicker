@@ -336,7 +336,7 @@ class SleepTimePicker @JvmOverloads constructor(
             when (index) {
                 0 -> {
                     canvas.drawText(
-                        "오전 12시",
+                        "오후 12시",
                         (startX - 50).toFloat(),
                         (startY + 60).toFloat(),
                         divisionTextPaint
@@ -352,7 +352,7 @@ class SleepTimePicker @JvmOverloads constructor(
                 }
                 30 -> {
                     canvas.drawText(
-                        "오후 12시",
+                        "오전 12시",
                         (startX - 50).toFloat(),
                         (startY - 50).toFloat(),
                         divisionTextPaint
@@ -450,13 +450,13 @@ class SleepTimePicker @JvmOverloads constructor(
     }
 
     private fun checkWakeMeridiem(): String {
-        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
-        return if( wakeMins in 1..360) "오전" else "오후"
+        val wakeMinsMeridiem = snapMinutes(angleToMins(wakeAngle), stepMinutes)
+        return if( wakeMinsMeridiem in 1..360) "오전" else "오후"
     }
 
     private fun checkBedMeridiem(): String {
-        val bedMins = snapMinutes(angleToMins(sleepAngle), stepMinutes)
-        return if( bedMins in 1..360) "오전" else "오후"
+        val bedMinsMeridiem = snapMinutes(angleToMins(sleepAngle), stepMinutes)
+        return if( bedMinsMeridiem in 1..360) "오전" else "오후"
    }
 
     // 나중에 위로 올리기

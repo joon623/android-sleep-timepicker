@@ -144,18 +144,38 @@
             android:layout_gravity="center"
             />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="normal"
-            android:textSize="33sp"
-            android:textColor="@color/white"
-            android:gravity="center_horizontal"
-            android:layout_gravity="center"
-            android:text="9시간 50분"
-            tools:text="9시간 50분"
-            />
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
 
+            <TextView
+                android:id="@+id/tvHours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal"
+                android:textSize="33sp"
+                android:textColor="@color/white"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center"
+                android:layout_marginRight="7dp"
+                android:text="9시간"
+                />
+
+            <TextView
+                android:id="@+id/tvMins"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="normal"
+                android:textSize="33sp"
+                android:textColor="@color/white"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center"
+                android:text="50분"
+                />
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
