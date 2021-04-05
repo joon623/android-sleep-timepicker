@@ -47,8 +47,6 @@ class MainActivity : AppCompatActivity() {
         val hours = (duration / 60) % 60
         val minutes = duration % 60
 
-        Log.d(TAG,"bedTime is  ${bedTime.toString()}")
-
         tvHours.text = "${hours.toString()}시간 "
         tvMins.text = "${minutes.toString()}분"
     }
