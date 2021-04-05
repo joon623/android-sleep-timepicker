@@ -19,7 +19,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleUpdate(bedTime: org.threeten.bp.LocalTime, wakeTime: org.threeten.bp.LocalTime) {
         val formatter = DateTimeFormatter.ofPattern("a h:mm", Locale.KOREA)
+        val formatter2 = DateTimeFormatter.ofPattern("h:mm", Locale.KOREA)
         tvBedTime.text = bedTime.format(formatter)
         tvWakeTime.text = wakeTime.format(formatter)
+        test.text = checkWakeMeridiem()
     }
 }

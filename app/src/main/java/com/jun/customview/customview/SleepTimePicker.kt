@@ -2,7 +2,6 @@ package com.jun.customview.customview
 
 import android.content.Context
 import android.graphics.*
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
@@ -12,14 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
-import androidx.annotation.RequiresApi
 import com.jun.customview.R
 import com.jun.customview.SleepTimerUtils
 import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
-import com.jun.customview.SleepTimerUtils.Companion.angleToMinsTest
+import com.jun.customview.SleepTimerUtils.Companion.angleToMins
 import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
 import com.jun.customview.SleepTimerUtils.Companion.to_0_360
-import com.jun.customview.SleepTimerUtils.Companion.to_0_720
 import org.threeten.bp.LocalTime
 import kotlin.math.*
 
@@ -441,14 +438,32 @@ class SleepTimePicker @JvmOverloads constructor(
     fun getWakeTime() = computeWakeTime()
 
     private fun computeBedTime(): LocalTime {
-        val bedMins = snapMinutes(angleToMinsTest(sleepAngle), stepMinutes)
+        val bedMins = snapMinutes(angleToMins(sleepAngle), stepMinutes)
         return LocalTime.of((bedMins / 30) % 12, bedMins % 60)
     }
 
     private fun computeWakeTime(): LocalTime {
-        val wakeMins = snapMinutes(angleToMinsTest(wakeAngle), stepMinutes)
+        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
         return LocalTime.of((wakeMins / 30) % 12, wakeMins % 60)
     }
+
+//    fun checkWakeMeridiem(): String {
+//        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
+//        return if( wakeMins in 1..360) {
+//            "오전"
+//        } else {
+//            "오후"
+//        }
+//    }
+//
+//    private fun checkBedMeridiem(): String {
+//        val bedMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
+//        return if( bedMins in 1..360) {
+//            "오전"
+//        } else {
+//            "오후"
+//        }
+//   }
 
     // 나중에 위로 올리기
     var listener: ((bedTime: LocalTime, wakeTime: LocalTime) -> Unit)? = null
