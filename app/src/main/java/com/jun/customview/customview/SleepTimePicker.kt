@@ -16,6 +16,7 @@ import com.jun.customview.SleepTimerUtils
 import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
 import com.jun.customview.SleepTimerUtils.Companion.angleToMins
 import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
+import com.jun.customview.SleepTimerUtils.Companion.snapTest
 import com.jun.customview.SleepTimerUtils.Companion.to_0_360
 import org.threeten.bp.LocalTime
 import kotlin.math.*
@@ -439,29 +440,34 @@ class SleepTimePicker @JvmOverloads constructor(
 
     fun getBedMeridiem() = checkBedMeridiem()
 
-    private fun computeBedTime(): LocalTime {
-        val bedMins = snapMinutes(angleToMins(sleepAngle), stepMinutes)
-        return LocalTime.of((bedMins / 30) % 12, bedMins % 60)
+    private fun computeBedTime(): Double {
+        Log.d(TAG, angleToMins(sleepAngle).toString())
+        val bedMins = snapTest(angleToMins(sleepAngle), stepMinutes)
+//        Log.d(TAG, bedMins.toString())
+        return bedMins
+//        return LocalTime.of((bedMins / 30) % 12, bedMins % 60)
     }
 
     private fun computeWakeTime(): LocalTime {
         val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
-        return LocalTime.of((wakeMins / 30) % 12, wakeMins % 60)
+        return LocalTime.of(((wakeMins / 30) % 12).toInt(), (wakeMins % 60).toInt())
     }
 
     private fun checkWakeMeridiem(): String {
         val wakeMinsMeridiem = snapMinutes(angleToMins(wakeAngle), stepMinutes)
-        return if( wakeMinsMeridiem in 1..360) "오전" else "오후"
+//        return if( wakeMinsMeridiem in 1..360) "오전" else "오후"
+        return if(wakeMinsMeridiem >0 && wakeMinsMeridiem < 360) "오전" else "오후"
     }
 
     private fun checkBedMeridiem(): String {
         val bedMinsMeridiem = snapMinutes(angleToMins(sleepAngle), stepMinutes)
-        return if( bedMinsMeridiem in 1..360) "오전" else "오후"
+//        return if( bedMinsMeridiem in 1..360) "오전" else "오후"
+        return if(bedMinsMeridiem >0 && bedMinsMeridiem < 360) "오전" else "오후"
    }
 
     // 나중에 위로 올리기
-    var listener: ((bedTime: LocalTime, wakeTime: LocalTime) -> Unit)? = null
-    private val stepMinutes = 5
+    var listener: ((bedTime: Double, wakeTime: LocalTime) -> Unit)? = null
+    private val stepMinutes = 2.5
 
     private fun notifyChanges() {
         val computeBedTime = computeBedTime()
