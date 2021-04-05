@@ -74,4 +74,20 @@ dependencies {
 
 ## 04.05
 - 수면 시간 계산 확인 
-- 기상 시간, 취침 시간 오류 발견 
+- 기상 시간, 취침 시간 오류 발견 -> 해결할 수 있는 코드 만듦 
+- 내일 나머지 모두 적용해서 정상적으로 돌아가게 만들 예정 
+
+```
+        fun snapTest(minutes: Int, step: Double): Double {
+            val remainder = minutes % 10
+            var rest = 0.0
+            when (remainder) {
+                0 ,1, 2 -> rest = 0.0
+                3, 4-> rest = 2.5
+                5, 6, 7 -> rest = 5.0
+                8, 9 -> rest = 7.5
+            }
+            return minutes - (minutes % 10) + rest
+        }
+
+```
