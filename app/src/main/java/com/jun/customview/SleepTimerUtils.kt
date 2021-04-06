@@ -51,14 +51,15 @@ class SleepTimerUtils {
             return atan2(cross(x1, y1, x2, y2), dot(x1, y1, x2, y2))
         }
 
+        // 삭제 예정 snapTest로 사용예정
         fun snapMinutes(minutes: Int, step: Double): Double {
             return (minutes / step) * step + (2 * (minutes % step) / step) * step
         }
 
-        fun snapTest(minutes: Int, step: Double): Double {
-            val remainder = minutes % 10
+        // 사용예정
+        fun snapTest(minutes: Int): Double {
             var rest = 0.0
-            when (remainder) {
+            when (minutes % 10) {
                 0 ,1, 2 -> rest = 0.0
                 3, 4-> rest = 2.5
                 5, 6, 7 -> rest = 5.0

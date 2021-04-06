@@ -337,7 +337,7 @@ class SleepTimePicker @JvmOverloads constructor(
             when (index) {
                 0 -> {
                     canvas.drawText(
-                        "오후 12시",
+                        "오전 12시",
                         (startX - 50).toFloat(),
                         (startY + 60).toFloat(),
                         divisionTextPaint
@@ -353,7 +353,7 @@ class SleepTimePicker @JvmOverloads constructor(
                 }
                 30 -> {
                     canvas.drawText(
-                        "오전 12시",
+                        "오후 12시",
                         (startX - 50).toFloat(),
                         (startY - 50).toFloat(),
                         divisionTextPaint
@@ -441,32 +441,27 @@ class SleepTimePicker @JvmOverloads constructor(
     fun getBedMeridiem() = checkBedMeridiem()
 
     private fun computeBedTime(): Double {
-        Log.d(TAG, angleToMins(sleepAngle).toString())
-        val bedMins = snapTest(angleToMins(sleepAngle), stepMinutes)
-//        Log.d(TAG, bedMins.toString())
-        return bedMins
-//        return LocalTime.of((bedMins / 30) % 12, bedMins % 60)
+        return snapTest(angleToMins(sleepAngle))
     }
 
-    private fun computeWakeTime(): LocalTime {
-        val wakeMins = snapMinutes(angleToMins(wakeAngle), stepMinutes)
-        return LocalTime.of(((wakeMins / 30) % 12).toInt(), (wakeMins % 60).toInt())
+    private fun computeWakeTime(): Double {
+        return snapTest(angleToMins(wakeAngle))
     }
 
     private fun checkWakeMeridiem(): String {
-        val wakeMinsMeridiem = snapMinutes(angleToMins(wakeAngle), stepMinutes)
-//        return if( wakeMinsMeridiem in 1..360) "오전" else "오후"
-        return if(wakeMinsMeridiem >0 && wakeMinsMeridiem < 360) "오전" else "오후"
+        val wakeMinsMeridiem = snapTest(angleToMins(wakeAngle)).toInt()
+        return if (wakeMinsMeridiem in 0..359)
+            "오전"
+        else "오후"
     }
 
     private fun checkBedMeridiem(): String {
-        val bedMinsMeridiem = snapMinutes(angleToMins(sleepAngle), stepMinutes)
-//        return if( bedMinsMeridiem in 1..360) "오전" else "오후"
-        return if(bedMinsMeridiem >0 && bedMinsMeridiem < 360) "오전" else "오후"
-   }
+        val bedMinsMeridiem = snapTest(angleToMins(sleepAngle)).toInt()
+        return if (bedMinsMeridiem in 0..359) "오전" else "오후"
+    }
 
     // 나중에 위로 올리기
-    var listener: ((bedTime: Double, wakeTime: LocalTime) -> Unit)? = null
+    var listener: ((bedTime: Double, wakeTime: Double) -> Unit)? = null
     private val stepMinutes = 2.5
 
     private fun notifyChanges() {
