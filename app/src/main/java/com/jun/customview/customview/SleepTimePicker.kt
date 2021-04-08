@@ -42,9 +42,7 @@ class SleepTimePicker @JvmOverloads constructor(
         private const val DEFAULT_STROKE_PG_WIDTH_DP = 10F
         private const val DEFAULT_DIVISION_LENGTH_DP = 8F
         private const val DEFAULT_DIVISION_OFFSET_DP = 12F
-        private const val DEFAULT_LABEL_OFFSET_DP = 36F
         private const val DEFAULT_DIVISION_WIDTH_DP = 2F
-        private const val SCALE_LABEL_TEXT_SIZE = 13F
         private const val DEFAULT_DIVISION_TEXT_SIZE = 12F
 
         //color
@@ -52,10 +50,6 @@ class SleepTimePicker @JvmOverloads constructor(
         private const val DEFAULT_PROGRESS_COLOR = "#7381a4"
         private const val DEFAULT_DIVISION_COLOR = "#7381a4"
         private const val DEFAULT_DIVISION_TEXT_COLOR = "#ffffff"
-
-        // ratio
-        private const val BLUR_STROKE_RATIO = 3 / 8F
-        private const val BLUR_RADIUS_RATIO = 1 / 4F
     }
 
     // The progress circle ring background
@@ -66,14 +60,12 @@ class SleepTimePicker @JvmOverloads constructor(
     private lateinit var divisionTextPaint: Paint
     private lateinit var divisionSmallTextPaint: Paint
 
-
     private var divisionOffset = 0
     private var labelOffset = 0
     private var divisionLength = 0
     private var divisionTextSize = 0
 
     private var divisionShortLength = 0
-
 
     private lateinit var circleBounds: RectF
     private var radius: Float = 0F
@@ -85,10 +77,11 @@ class SleepTimePicker @JvmOverloads constructor(
 
     private lateinit var sleepLayout: View
     private lateinit var wakeLayout: View
-    private var sleepAngle = 30.0
-    private var wakeAngle = 60.0
+    private var sleepAngle = 60.0
+    private var wakeAngle = 30.0
     private var draggingSleep = false
     private var draggingWake = false
+    private var draggingProgress = false
 
     private fun init(@NonNull context: Context, @Nullable attrs: AttributeSet?) {
         // 처리가 필요
@@ -98,7 +91,6 @@ class SleepTimePicker @JvmOverloads constructor(
         divisionLength = dp2px(DEFAULT_DIVISION_LENGTH_DP) * 2
         divisionWidth = dp2px(DEFAULT_DIVISION_WIDTH_DP)
         divisionTextSize = sp2Px(DEFAULT_DIVISION_TEXT_SIZE)
-
         divisionShortLength = dp2px(DEFAULT_DIVISION_LENGTH_DP)
 
         var progressBgStrokeWidth = dp2px(DEFAULT_STROKE_WIDTH_DP)
@@ -107,7 +99,6 @@ class SleepTimePicker @JvmOverloads constructor(
         var divisionTextColor = Color.parseColor(DEFAULT_DIVISION_TEXT_COLOR)
         var sleepLayoutId = 0
         var wakeLayoutId = 0
-
 
         var progressStrokeWidth = dp2px(DEFAULT_STROKE_PG_WIDTH_DP)
         var progressColor = Color.parseColor(DEFAULT_PROGRESS_COLOR)
@@ -154,7 +145,6 @@ class SleepTimePicker @JvmOverloads constructor(
         divisionSmallTextPaint.textSize = sp2Px(20F).toFloat()
         divisionSmallTextPaint.color = divisionColor
 
-
         val inflater = LayoutInflater.from(context)
         sleepLayout = inflater.inflate(sleepLayoutId, this, false)
         wakeLayout = inflater.inflate(wakeLayoutId, this, false)
@@ -174,6 +164,7 @@ class SleepTimePicker @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         layoutView(sleepLayout, sleepAngle)
         layoutView(wakeLayout, wakeAngle)
+//        findProgress(sleepAngle)
     }
 
     private fun layoutView(view: View, angle: Double) {
@@ -185,12 +176,42 @@ class SleepTimePicker @JvmOverloads constructor(
         val parentCenterY = height / 2
         val centerX = (parentCenterX + radius * cos(Math.toRadians(angle))).toInt()
         val centerY = (parentCenterY - radius * sin(Math.toRadians(angle))).toInt()
+//        Log.d(TAG, "measuredWidth is ${measuredWidth.toString()}")
+//        Log.d(TAG, "measuredHeight is ${measuredHeight.toString()}")
+//        Log.d(TAG, "halfWidth is ${halfWidth.toString()}")
+//        Log.d(TAG, "halfHeight is ${halfHeight.toString()}")
+//        Log.d(TAG, "parentCenterX is ${parentCenterX.toString()}")
+//        Log.d(TAG, "parentCenterY is ${parentCenterY.toString()}")
+//        Log.d(TAG, "centerX is ${centerX.toString()}")
+//        Log.d(TAG, "centerY is ${centerY.toString()}")
         view.layout(
-            (centerX - halfWidth),
+            centerX - halfWidth,
             centerY - halfHeight,
             centerX + halfWidth,
             centerY + halfHeight
         )
+    }
+
+    private fun findProgress(startAngle: Float, sweep: Float, ev: MotionEvent):Boolean {
+        val parentCenterX = width
+        val parentCenterY = height
+        val startX = (parentCenterX + radius * cos(Math.toRadians(startAngle.toDouble()))).toInt()
+        val startY = (parentCenterY - radius * sin(Math.toRadians(startAngle.toDouble()))).toInt()
+        val sweepX = (parentCenterX + radius * cos(Math.toRadians(sweep.toDouble()))).toInt()
+        val sweepY = (parentCenterY - radius * sin(Math.toRadians(sweep.toDouble()))).toInt()
+
+        Log.d(TAG, "parentCenterX is ${parentCenterX.toString()}")
+        Log.d(TAG, "parentCenterY is ${parentCenterY.toString()}")
+        Log.d(TAG, "ev is ${ev.x.toString()}")
+//        Log.d(TAG, "startX is ${startX.toString()}")
+//        Log.d(TAG, "startY is ${startY.toString()}")
+//        Log.d(TAG, "sweepX is ${sweepX.toString()}")
+//        Log.d(TAG, "sweepY is ${sweepY.toString()}")
+//        return (ev.x > view.left && ev.x < view.right
+//                && ev.y > view.top && ev.y < view.bottom)
+//
+//        Log.d(TAG, radius.toString())
+        return true
     }
 
     private fun dp2px(dp: Float): Int {
@@ -222,6 +243,9 @@ class SleepTimePicker @JvmOverloads constructor(
                 draggingWake = true
                 return true
             }
+            if(findProgress(startAngle, sweep, event)){
+                draggingProgress = true
+            }
         }
         return super.onInterceptTouchEvent(event)
     }
@@ -233,7 +257,9 @@ class SleepTimePicker @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 return true
             }
+
             MotionEvent.ACTION_MOVE -> {
+                findProgress(startAngle, sweep, event)
                 val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
                 if (draggingSleep) {
                     val sleepAngleRad = Math.toRadians(sleepAngle)
@@ -244,8 +270,17 @@ class SleepTimePicker @JvmOverloads constructor(
                     return true
                 } else if (draggingWake) {
                     val wakeAngleRad = Math.toRadians(wakeAngle)
+                    val sleepAngleRad = Math.toRadians(sleepAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
                     wakeAngle = to_0_360(wakeAngle + diff)
+                    requestLayout()
+                    notifyChanges()
+                    return true
+                } else if (draggingProgress) {
+                    val wakeAngleRad = Math.toRadians(wakeAngle)
+                    val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
+                    wakeAngle = to_0_360(wakeAngle + diff)
+                    sleepAngle = to_0_360(sleepAngle + diff)
                     requestLayout()
                     notifyChanges()
                     return true
@@ -255,6 +290,7 @@ class SleepTimePicker @JvmOverloads constructor(
             MotionEvent.ACTION_UP -> {
                 draggingSleep = false
                 draggingWake = false
+                draggingProgress = false
             }
         }
         invalidate()
@@ -286,12 +322,16 @@ class SleepTimePicker @JvmOverloads constructor(
         )
     }
 
+    // 나중에 위로 올리기
+    private var startAngle : Float = 0.0f
+    private var sweep: Float = 0.0f
+
     private fun drawProgress(canvas: Canvas) {
-        val startAngle = -sleepAngle.toFloat()
-        val sweep = SleepTimerUtils.to_0_360(sleepAngle - wakeAngle).toFloat()
+        startAngle = -sleepAngle.toFloat()
+        sweep = SleepTimerUtils.to_0_360(sleepAngle - wakeAngle).toFloat()
         canvas.drawArc(
-            circleBounds, startAngle.toFloat(),
-            sweep.toFloat(),
+            circleBounds, startAngle,
+            sweep,
             false, progressPaint!!
         )
     }
@@ -450,9 +490,7 @@ class SleepTimePicker @JvmOverloads constructor(
 
     private fun checkWakeMeridiem(): String {
         val wakeMinsMeridiem = snapTest(angleToMins(wakeAngle)).toInt()
-        return if (wakeMinsMeridiem in 0..359)
-            "오전"
-        else "오후"
+        return if (wakeMinsMeridiem in 0..359) "오전" else "오후"
     }
 
     private fun checkBedMeridiem(): String {
@@ -477,6 +515,8 @@ class SleepTimePicker @JvmOverloads constructor(
         measureChildren(widthMeasureSpec, heightMeasureSpec)
         val smallestSide = Math.min(measuredWidth, measuredHeight)
         setMeasuredDimension(smallestSide, smallestSide)
+        Log.d(TAG, measuredWidth.toString())
+        Log.d(TAG, measuredHeight.toString())
     }
 
     override fun onDraw(canvas: Canvas) {
