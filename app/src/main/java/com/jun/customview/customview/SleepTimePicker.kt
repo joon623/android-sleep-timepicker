@@ -233,7 +233,10 @@ class SleepTimePicker @JvmOverloads constructor(
         }
 
         if(wakeAngle > sleepAngle) {
-            if(touchAngle > sleepAngle || touchAngle < wakeAngle) return false
+            Log.d(TAG, "sleepAngle is ${sleepAngle.toString()}")
+            Log.d(TAG, "wakeAngle is ${wakeAngle.toString()}")
+            Log.d(TAG, "touchAngle is ${touchAngle.toString()}")
+            if(touchAngle > sleepAngle && touchAngle < wakeAngle) return false
         }
         Log.d(TAG, "sleepAngle is ${sleepAngle.toString()}")
         Log.d(TAG, "wakeAngle is ${wakeAngle.toString()}")
@@ -289,11 +292,15 @@ class SleepTimePicker @JvmOverloads constructor(
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                Log.d(TAG, "draggingProgress ${draggingProgress.toString()}")
+
                 return true
             }
 
             MotionEvent.ACTION_MOVE -> {
                 Log.d(TAG, "draggingProgress ${draggingProgress.toString()}")
+                Log.d(TAG, "sleepAngle is  ${sleepAngle.toString()}")
+                Log.d(TAG, "wakeAngle is  ${wakeAngle.toString()}")
                 val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
 //                Log.d(TAG, "startAngle is ${sleepAngle.toString()}")
 //                Log.d(TAG, "sweep is ${wakeAngle.toString()}")
