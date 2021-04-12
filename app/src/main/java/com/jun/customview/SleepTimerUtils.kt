@@ -1,5 +1,6 @@
 package com.jun.customview
 
+import android.util.Log
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -26,11 +27,6 @@ class SleepTimerUtils {
             return (((to_0_360(90 - angle)) / 360) * 12 * 60).toInt()
         }
 
-        /**
-        @param angle1 - first angle in radians
-        @param angle2 - second angle in radians
-        @return angle between vectors in radians
-         **/
         fun angleBetweenVectors(angle1: Double, angle2: Double): Double {
             val x1 = cos(angle1)
             val y1 = sin(angle1)
@@ -51,19 +47,24 @@ class SleepTimerUtils {
             return atan2(cross(x1, y1, x2, y2), dot(x1, y1, x2, y2))
         }
 
-        // 삭제 예정 snapTest로 사용예정
-        fun snapMinutes(minutes: Int, step: Double): Double {
-            return (minutes / step) * step + (2 * (minutes % step) / step) * step
-        }
-
-        // 사용예정
-        fun snapTest(minutes: Int): Double {
+        fun snapMinutes(minutes: Int): Double {
             var rest = 0.0
             when (minutes % 10) {
                 0 ,1, 2 -> rest = 0.0
                 3, 4-> rest = 2.5
                 5, 6, 7 -> rest = 5.0
                 8, 9 -> rest = 7.5
+            }
+            return minutes - (minutes % 10) + rest
+        }
+
+        // 시간 계산 test
+        fun snapMinutes(minutes: Double): Double {
+            var rest = 0.0
+            when (minutes % 10) {
+                1.0, 2.0, 3.0 -> rest = 2.5
+                4.0, 5.0, 6.0 -> rest = 5.0
+                7.0, 8.0, 9.0 -> rest = 7.5
             }
             return minutes - (minutes % 10) + rest
         }
