@@ -229,13 +229,10 @@ class SleepTimePicker @JvmOverloads constructor(
         val touchAngle = to_0_360(touchAngleDegree)
         // touchAngle, sleepAngle, wakeAngle 비교
         if(sleepAngle > wakeAngle) {
-            if(wakeAngle > touchAngle || sleepAngle < touchAngle) return false
+            if(wakeAngle < touchAngle && sleepAngle < touchAngle) return false
         }
 
         if(wakeAngle > sleepAngle) {
-            Log.d(TAG, "sleepAngle is ${sleepAngle.toString()}")
-            Log.d(TAG, "wakeAngle is ${wakeAngle.toString()}")
-            Log.d(TAG, "touchAngle is ${touchAngle.toString()}")
             if(touchAngle > sleepAngle && touchAngle < wakeAngle) return false
         }
         Log.d(TAG, "sleepAngle is ${sleepAngle.toString()}")
