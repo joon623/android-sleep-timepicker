@@ -15,11 +15,8 @@ import com.jun.customview.R
 import com.jun.customview.SleepTimerUtils
 import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
 import com.jun.customview.SleepTimerUtils.Companion.angleToMins
-import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
 import com.jun.customview.SleepTimerUtils.Companion.snapTest
 import com.jun.customview.SleepTimerUtils.Companion.to_0_360
-import org.threeten.bp.LocalTime
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.*
 
@@ -41,7 +38,7 @@ class SleepTimePicker @JvmOverloads constructor(
 
         // stoke
         private const val DEFAULT_STROKE_WIDTH_DP = 5F
-        private const val DEFAULT_STROKE_PG_WIDTH_DP = 10F
+        private const val DEFAULT_STROKE_PG_WIDTH_DP = 18F
         private const val DEFAULT_DIVISION_LENGTH_DP = 8F
         private const val DEFAULT_DIVISION_OFFSET_DP = 12F
         private const val DEFAULT_DIVISION_WIDTH_DP = 2F
@@ -81,6 +78,7 @@ class SleepTimePicker @JvmOverloads constructor(
     private lateinit var wakeLayout: View
     private var sleepAngle = 60.0
     private var wakeAngle = 30.0
+    private var touchAngle = 0.0
     private var draggingSleep = false
     private var draggingWake = false
     private var draggingProgress = false
@@ -226,7 +224,8 @@ class SleepTimePicker @JvmOverloads constructor(
         // touchAngle 계산
         val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
         val touchAngleDegree = Math.toDegrees(touchAngleRad)
-        val touchAngle = to_0_360(touchAngleDegree)
+        touchAngle = to_0_360(touchAngleDegree)
+
         // touchAngle, sleepAngle, wakeAngle 비교
         if(sleepAngle > wakeAngle) {
             if(wakeAngle < touchAngle && sleepAngle < touchAngle) return false
@@ -235,14 +234,11 @@ class SleepTimePicker @JvmOverloads constructor(
         if(wakeAngle > sleepAngle) {
             if(touchAngle > sleepAngle && touchAngle < wakeAngle) return false
         }
-        Log.d(TAG, "sleepAngle is ${sleepAngle.toString()}")
-        Log.d(TAG, "wakeAngle is ${wakeAngle.toString()}")
-        Log.d(TAG, "touchAngle is ${touchAngle.toString()}")
 
-//        // event좌표 영역 확인 test~
-//        val eventPosition = Math.pow(radius.toDouble(), 2.0) > (Math.pow((parentCenterX - x).toDouble(), 2.0) + Math.pow(
-//            (parentCenterX - y).toDouble(), 2.0))
-//        if ((eventPosition)) return false
+        // event좌표 영역 확인 test~
+        val eventPosition = Math.pow((radius - DEFAULT_STROKE_PG_WIDTH_DP).toDouble(), 2.0) > (Math.pow((parentCenterX - x).toDouble(), 2.0) + Math.pow(
+            (parentCenterX - y).toDouble(), 2.0))
+        if ((eventPosition)) return false
 
         return true
     }
@@ -257,8 +253,7 @@ class SleepTimePicker @JvmOverloads constructor(
             TypedValue.COMPLEX_UNIT_SP,
             sp,
             resources.displayMetrics
-        )
-            .toInt()
+        ).toInt()
     }
 
     private fun isTouchOnView(view: View, ev: MotionEvent): Boolean {
@@ -289,26 +284,20 @@ class SleepTimePicker @JvmOverloads constructor(
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                Log.d(TAG, "draggingProgress ${draggingProgress.toString()}")
-
+//                Log.d(TAG, "draggingProgress ${draggingProgress.toString()}")
                 return true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                Log.d(TAG, "draggingProgress ${draggingProgress.toString()}")
-                Log.d(TAG, "sleepAngle is  ${sleepAngle.toString()}")
-                Log.d(TAG, "wakeAngle is  ${wakeAngle.toString()}")
                 val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
-//                Log.d(TAG, "startAngle is ${sleepAngle.toString()}")
-//                Log.d(TAG, "sweep is ${wakeAngle.toString()}")
-//                Log.d(TAG, "touchAngleRad is ${Math.toRadians( touchAngleRad).toString()}")
+
+                //test
+                val sleepDiff = sleepAngle - touchAngle
+                val wakeDiff = wakeAngle - touchAngle
                 if (draggingSleep) {
                     val sleepAngleRad = Math.toRadians(sleepAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad))
                     sleepAngle = to_0_360(sleepAngle + diff)
-//                    Log.d(TAG, "startAngle is ${sleepAngle.toString()}")
-//                Log.d(TAG, "sweep is ${wakeAngle.toString()}")
-//                Log.d(TAG, "touchAngleRad is ${Math.toRadians( touchAngleRad).toString()}")
                     requestLayout()
                     notifyChanges()
                     return true
@@ -316,8 +305,6 @@ class SleepTimePicker @JvmOverloads constructor(
                     val wakeAngleRad = Math.toRadians(wakeAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
                     wakeAngle = to_0_360(wakeAngle + diff)
-//                    Log.d(TAG, "wakeAngle is ${wakeAngle.toString()}")
-//                    Log.d(TAG, "wakeAnglediff is ${diff.toString()}")
                     requestLayout()
                     notifyChanges()
                     return true
@@ -325,12 +312,38 @@ class SleepTimePicker @JvmOverloads constructor(
                 else if (draggingProgress) {
                     val wakeAngleRad = Math.toRadians(wakeAngle)
                     val sleepAngleRad = Math.toRadians(sleepAngle)
-                    val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
-                    val diff2 = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad))
-                    wakeAngle = to_0_360(wakeAngle + diff)
-                    sleepAngle = to_0_360(sleepAngle + diff)
+                    touchAngle = to_0_360(Math.toDegrees(touchAngleRad))
+                    val touchAngleRad2 = Math.toRadians(touchAngle)
+                    val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad2))
+                    val diff2 = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad2))
+
+
+                    Log.d(TAG, "---------------before----------------")
+                    Log.d(TAG, "touchAngle is  ${touchAngle.toString()}")
+                    Log.d(TAG, "sleepAngle is  ${sleepAngle.toString()}")
+                    Log.d(TAG, "wakeAngle is  ${wakeAngle.toString()}")
+                    Log.d(TAG, "touchAngleRad2 is  ${touchAngleRad2.toString()}")
+                    Log.d(TAG, "diff is  ${diff.toString()}")
+                    Log.d(TAG, "diff2 is  ${diff2.toString()}")
+
+//                    Log.d(TAG, "sleepAngle is  ${sleepAngle.toString()}")
+                    Log.d(TAG, "------------------------------------------")
+
+
+                    wakeAngle = to_0_360(touchAngle + wakeDiff)
+                    sleepAngle = to_0_360(touchAngle + sleepDiff)
+//                    wakeAngle = to_0_360(diff + wakeAngle )
+//                    sleepAngle = to_0_360(diff2 + sleepAngle)
                     requestLayout()
                     notifyChanges()
+                    Log.d(TAG, "----------------after------------------")
+                    Log.d(TAG, "touchAngle is  ${touchAngle.toString()}")
+                    Log.d(TAG, "wakeAngle is  ${wakeAngle.toString()}")
+                    Log.d(TAG, "sleepAngle is  ${sleepAngle.toString()}")
+                    Log.d(TAG, "------------------------------------------")
+
+//                    Log.d(TAG, "WakeDiff is  ${WakeDiff.toString()}")
+//                    Log.d(TAG, "SleepDiff is  ${SleepDiff.toString()}")
                     return true
                 }
             }
