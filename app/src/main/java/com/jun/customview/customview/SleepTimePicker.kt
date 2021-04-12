@@ -3,6 +3,7 @@ package com.jun.customview.customview
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -14,7 +15,7 @@ import com.jun.customview.R
 import com.jun.customview.SleepTimerUtils
 import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
 import com.jun.customview.SleepTimerUtils.Companion.angleToMins
-import com.jun.customview.SleepTimerUtils.Companion.snapTest
+import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
 import com.jun.customview.SleepTimerUtils.Companion.to_0_360
 import kotlin.math.*
 
@@ -58,7 +59,6 @@ class SleepTimePicker @JvmOverloads constructor(
     private lateinit var divisionSmallTextPaint: Paint
 
     private var divisionOffset = 0
-    private var labelOffset = 0
     private var divisionLength = 0
     private var divisionTextSize = 0
 
@@ -69,7 +69,6 @@ class SleepTimePicker @JvmOverloads constructor(
     private var center = Point(0, 0)
     private var divisionWidth = 0
 
-    private val textRect = Rect()
     private var labelColor = Color.WHITE
 
     private lateinit var sleepLayout: View
@@ -181,7 +180,7 @@ class SleepTimePicker @JvmOverloads constructor(
         )
     }
 
-    private fun findProgress(startAngle: Float, sweep: Float, ev: MotionEvent):Boolean {
+    private fun findProgress(ev: MotionEvent): Boolean {
         val parentCenterX = width / 2
         val parentCenterY = height / 2
         val x = ev.x
@@ -193,19 +192,27 @@ class SleepTimePicker @JvmOverloads constructor(
         touchAngle = to_0_360(touchAngleDegree)
 
         // touchAngle, sleepAngle, wakeAngle 비교
-        if(sleepAngle > wakeAngle) {
-            if(wakeAngle < touchAngle && sleepAngle < touchAngle) return false
+        if (sleepAngle > wakeAngle) {
+            if (wakeAngle < touchAngle && sleepAngle < touchAngle) return false
         }
 
-        if(wakeAngle > sleepAngle) {
-            if(touchAngle > sleepAngle && touchAngle < wakeAngle) return false
+        if (wakeAngle > sleepAngle) {
+            if (touchAngle > sleepAngle && touchAngle < wakeAngle) return false
         }
 
         // event좌표 영역 확인
-        val divisionPosition = Math.pow((radius - DEFAULT_STROKE_PG_WIDTH_DP).toDouble(), 2.0) > (Math.pow((parentCenterX - x).toDouble(), 2.0) + Math.pow(
-            (parentCenterY - y).toDouble(), 2.0))
-        val outOfCirclePosition = Math.pow((radius + DEFAULT_STROKE_PG_WIDTH_DP).toDouble(), 2.0) < (Math.pow((parentCenterX - x).toDouble(), 2.0) + Math.pow(
-            (parentCenterY - y).toDouble(), 2.0))
+        val divisionPosition = Math.pow(
+            (radius - DEFAULT_STROKE_PG_WIDTH_DP).toDouble(),
+            2.0
+        ) > (Math.pow((parentCenterX - x).toDouble(), 2.0) + Math.pow(
+            (parentCenterY - y).toDouble(), 2.0
+        ))
+        val outOfCirclePosition = Math.pow(
+            (radius + DEFAULT_STROKE_PG_WIDTH_DP).toDouble(),
+            2.0
+        ) < (Math.pow((parentCenterX - x).toDouble(), 2.0) + Math.pow(
+            (parentCenterY - y).toDouble(), 2.0
+        ))
         if (divisionPosition || outOfCirclePosition) return false
         return true
     }
@@ -238,7 +245,7 @@ class SleepTimePicker @JvmOverloads constructor(
                 draggingWake = true
                 return true
             }
-            if(findProgress(startAngle, sweep, event)){
+            if (findProgress(event)) {
                 draggingProgress = true
                 return true
             }
@@ -251,7 +258,6 @@ class SleepTimePicker @JvmOverloads constructor(
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-//                Log.d(TAG, "draggingProgress ${draggingProgress.toString()}")
                 return true
             }
 
@@ -262,7 +268,11 @@ class SleepTimePicker @JvmOverloads constructor(
                 if (draggingSleep) {
                     val sleepAngleRad = Math.toRadians(sleepAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad))
-                    sleepAngle = to_0_360(sleepAngle + diff)
+                    sleepAngle = floor(to_0_360(sleepAngle + diff))
+                    Log.d(TAG, "-----------------------------")
+                    Log.d(TAG, "sleepAngle is ${sleepAngle}")
+//                    Log.d(TAG, "diff is ${to_0_360(floor(sleepAngle))}")
+                    Log.d(TAG, "-----------------------------")
                     requestLayout()
                     notifyChanges()
                     return true
@@ -273,8 +283,7 @@ class SleepTimePicker @JvmOverloads constructor(
                     requestLayout()
                     notifyChanges()
                     return true
-                }
-                else if (draggingProgress) {
+                } else if (draggingProgress) {
                     touchAngle = to_0_360(Math.toDegrees(touchAngleRad))
                     wakeAngle = to_0_360(touchAngle + wakeDiff)
                     sleepAngle = to_0_360(touchAngle + sleepDiff)
@@ -320,7 +329,7 @@ class SleepTimePicker @JvmOverloads constructor(
     }
 
     // 나중에 위로 올리기
-    private var startAngle : Float = 0.0f
+    private var startAngle: Float = 0.0f
     private var sweep: Float = 0.0f
 
     private fun drawProgress(canvas: Canvas) {
@@ -477,26 +486,25 @@ class SleepTimePicker @JvmOverloads constructor(
     fun getBedMeridiem() = checkBedMeridiem()
 
     private fun computeBedTime(): Double {
-        return snapTest(angleToMins(sleepAngle))
+        return snapMinutes(angleToMins(sleepAngle))
     }
 
     private fun computeWakeTime(): Double {
-        return snapTest(angleToMins(wakeAngle))
+        return snapMinutes(angleToMins(wakeAngle))
     }
 
     private fun checkWakeMeridiem(): String {
-        val wakeMinsMeridiem = snapTest(angleToMins(wakeAngle)).toInt()
+        val wakeMinsMeridiem = snapMinutes(angleToMins(wakeAngle)).toInt()
         return if (wakeMinsMeridiem in 0..359) "오전" else "오후"
     }
 
     private fun checkBedMeridiem(): String {
-        val bedMinsMeridiem = snapTest(angleToMins(sleepAngle)).toInt()
+        val bedMinsMeridiem = snapMinutes(angleToMins(sleepAngle)).toInt()
         return if (bedMinsMeridiem in 0..359) "오전" else "오후"
     }
 
     // 나중에 위로 올리기
     var listener: ((bedTime: Double, wakeTime: Double) -> Unit)? = null
-    private val stepMinutes = 2.5
 
     private fun notifyChanges() {
         val computeBedTime = computeBedTime()

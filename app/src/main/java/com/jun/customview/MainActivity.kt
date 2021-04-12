@@ -42,19 +42,32 @@ class MainActivity : AppCompatActivity() {
         tvWakeMeridiem.text = timePicker.getWakeMeridiem()
         tvBedMeridiem.text = timePicker.getBedMeridiem()
 
+        Log.d(TAG, "----------------before----------------")
+        Log.d(TAG, "bedTime is ${bedTime.toInt().toString()}")
+        Log.d(TAG, "wakeTime is ${wakeTime.toInt().toString()}")
+        Log.d(TAG, "-----------------------------------")
+
         var bedTime : Int = ((bedHour * 60) + bedMinutes)
         var wakeTime : Int = ((wakeHour * 60)  + wakeMinutes)
         if(timePicker.getBedMeridiem() == "오후" && bedHour != 12 ) bedTime += 720
         if(timePicker.getBedMeridiem() == "오전" && bedHour == 12 ) bedTime -= 720
         if(timePicker.getWakeMeridiem() == "오후" && wakeHour != 12 ) wakeTime += 720
         if(timePicker.getWakeMeridiem() == "오전" && wakeHour == 12 ) wakeTime -= 720
-        if( bedTime >= wakeTime) wakeTime += 1440
+        if(bedTime >= wakeTime) wakeTime += 1440
+
+        Log.d(TAG, "----------------after----------------")
+        Log.d(TAG, "bedTime is ${bedTime.toInt().toString()}")
+        Log.d(TAG, "wakeTime is ${wakeTime.toInt().toString()}")
+        Log.d(TAG, "-----------------------------------")
 
         val duration = wakeTime - bedTime
         val hours = (duration / 60) % 60
         val minutes = duration % 60
-        Log.d(TAG, "bedTime is ${bedTime.toInt().toString()}")
-        Log.d(TAG, "wakeTime is ${wakeTime.toInt().toString()}")
+
+        Log.d(TAG, "-----------------------------------")
+        Log.d(TAG, "duration is ${duration.toInt().toString()}")
+        Log.d(TAG, "hours is ${hours.toInt().toString()}")
+        Log.d(TAG, "minutes is ${minutes.toInt().toString()}")
         tvHours.text = "${hours.toString()}시간 "
         tvMins.text = "${minutes.toString()}분"
     }
