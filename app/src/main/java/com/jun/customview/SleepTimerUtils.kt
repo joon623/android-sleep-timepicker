@@ -68,5 +68,30 @@ class SleepTimerUtils {
             }
             return minutes - (minutes % 10) + rest
         }
+
+        // 앵글 1.25씩 커지게 하기
+        fun stepAngle(beforeAngle: Double, nowAngle: Double): Double {
+            if(beforeAngle < nowAngle) {
+                return nowAngle - (nowAngle % 1.25) + 1.25
+            } else if (beforeAngle > nowAngle) {
+                return nowAngle - (nowAngle % 1.25)
+            }
+            return nowAngle
+        }
+
+        fun stepAngle2(sleepAngleIncrease: Boolean, nowAngle: Double): Double {
+            if(sleepAngleIncrease) {
+                return nowAngle - (nowAngle % 1.25) + 1.25
+            } else {
+                return nowAngle - (nowAngle % 1.25)
+            }
+            return nowAngle
+        }
+
+
+        // test3333
+        fun stepAngle3( nowAngle: Double): Double {
+            return nowAngle - (nowAngle % 1.25) + 1.25
+        }
     }
 }

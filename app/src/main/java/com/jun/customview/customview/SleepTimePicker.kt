@@ -16,6 +16,8 @@ import com.jun.customview.SleepTimerUtils
 import com.jun.customview.SleepTimerUtils.Companion.angleBetweenVectors
 import com.jun.customview.SleepTimerUtils.Companion.angleToMins
 import com.jun.customview.SleepTimerUtils.Companion.snapMinutes
+import com.jun.customview.SleepTimerUtils.Companion.stepAngle
+import com.jun.customview.SleepTimerUtils.Companion.stepAngle2
 import com.jun.customview.SleepTimerUtils.Companion.to_0_360
 import kotlin.math.*
 
@@ -68,6 +70,9 @@ class SleepTimePicker @JvmOverloads constructor(
     private var radius: Float = 0F
     private var center = Point(0, 0)
     private var divisionWidth = 0
+    private var startAngle: Float = 0.0f
+    private var sweep: Float = 0.0f
+
 
     private var labelColor = Color.WHITE
 
@@ -79,6 +84,7 @@ class SleepTimePicker @JvmOverloads constructor(
     private var draggingSleep = false
     private var draggingWake = false
     private var draggingProgress = false
+    var listener: ((bedTime: Double, wakeTime: Double) -> Unit)? = null
 
     private fun init(@NonNull context: Context, @Nullable attrs: AttributeSet?) {
         // 처리가 필요
@@ -253,6 +259,10 @@ class SleepTimePicker @JvmOverloads constructor(
         return super.onInterceptTouchEvent(event)
     }
 
+
+    // 나중에 위로 올리기
+    var sleepAngleIncrease: Boolean = false
+    var wakeAngleIncrease: Boolean = false
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val x = event.x
         val y = event.y
@@ -260,33 +270,42 @@ class SleepTimePicker @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 return true
             }
-
             MotionEvent.ACTION_MOVE -> {
                 val touchAngleRad = atan2(center.y - y, x - center.x).toDouble()
                 val sleepDiff = sleepAngle - touchAngle
                 val wakeDiff = wakeAngle - touchAngle
+
                 if (draggingSleep) {
                     val sleepAngleRad = Math.toRadians(sleepAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(sleepAngleRad, touchAngleRad))
-                    sleepAngle = floor(to_0_360(sleepAngle + diff))
-                    Log.d(TAG, "-----------------------------")
-                    Log.d(TAG, "sleepAngle is ${sleepAngle}")
-//                    Log.d(TAG, "diff is ${to_0_360(floor(sleepAngle))}")
-                    Log.d(TAG, "-----------------------------")
+                    val nowAngle = to_0_360(sleepAngle + diff)
+                    sleepAngleIncrease = nowAngle > sleepAngle
+                    sleepAngle = to_0_360(sleepAngle + diff)
                     requestLayout()
                     notifyChanges()
                     return true
                 } else if (draggingWake) {
                     val wakeAngleRad = Math.toRadians(wakeAngle)
                     val diff = Math.toDegrees(angleBetweenVectors(wakeAngleRad, touchAngleRad))
+                    val nowAngle = to_0_360(wakeAngle + diff)
+                    wakeAngleIncrease = nowAngle > wakeAngle
                     wakeAngle = to_0_360(wakeAngle + diff)
                     requestLayout()
                     notifyChanges()
                     return true
                 } else if (draggingProgress) {
                     touchAngle = to_0_360(Math.toDegrees(touchAngleRad))
+                    val sleepNowAngle = to_0_360(touchAngle + wakeDiff)
+                    val wakeNowAngle = to_0_360(touchAngle + sleepDiff)
+                    // 증감 해결되면  해결 가능할수도..
+                    sleepAngleIncrease = sleepNowAngle > sleepAngle
+                    wakeAngleIncrease = wakeNowAngle > wakeAngle
                     wakeAngle = to_0_360(touchAngle + wakeDiff)
-                    sleepAngle = to_0_360(touchAngle + sleepDiff)
+//                    sleepAngle = to_0_360(touchAngle + sleepDiff)
+                    Log.d(TAG, " wakeAngleIncrease is${  wakeAngleIncrease }")
+                    Log.d(TAG, "sleepAngleIncrease is ${  sleepAngleIncrease }")
+                    wakeAngle = stepAngle2(!wakeAngleIncrease, to_0_360(touchAngle + wakeDiff))
+                    sleepAngle = stepAngle2(sleepAngleIncrease, to_0_360(touchAngle + sleepDiff))
                     requestLayout()
                     notifyChanges()
                     return true
@@ -328,9 +347,6 @@ class SleepTimePicker @JvmOverloads constructor(
         )
     }
 
-    // 나중에 위로 올리기
-    private var startAngle: Float = 0.0f
-    private var sweep: Float = 0.0f
 
     private fun drawProgress(canvas: Canvas) {
         startAngle = -sleepAngle.toFloat()
@@ -485,26 +501,38 @@ class SleepTimePicker @JvmOverloads constructor(
 
     fun getBedMeridiem() = checkBedMeridiem()
 
+//    private fun computeBedTime(): Double {
+//        return snapMinutes(angleToMins(sleepAngle))
+//    }
+//
+//    private fun computeWakeTime(): Double {
+//        return snapMinutes(angleToMins(wakeAngle))
+//    }
+
+
+    // test 중
     private fun computeBedTime(): Double {
-        return snapMinutes(angleToMins(sleepAngle))
+        Log.d(TAG, "sleepAngle is ${sleepAngle}")
+        Log.d(TAG, "wakeAngle is ${wakeAngle}")
+        return stepAngle2(sleepAngleIncrease, sleepAngle)
     }
 
     private fun computeWakeTime(): Double {
-        return snapMinutes(angleToMins(wakeAngle))
+//        return snapMinutes(angleToMins(wakeAngle))
+        return stepAngle2(sleepAngleIncrease, wakeAngle)
     }
 
+    // 필요없는 변수 삭제 필요
     private fun checkWakeMeridiem(): String {
         val wakeMinsMeridiem = snapMinutes(angleToMins(wakeAngle)).toInt()
-        return if (wakeMinsMeridiem in 0..359) "오전" else "오후"
+        return if (wakeAngle < 90 || wakeAngle > 270) "오전" else "오후"
     }
 
+    // 필요없는 변수 삭제 필요
     private fun checkBedMeridiem(): String {
         val bedMinsMeridiem = snapMinutes(angleToMins(sleepAngle)).toInt()
-        return if (bedMinsMeridiem in 0..359) "오전" else "오후"
+        return if (sleepAngle < 90 || sleepAngle > 270) "오전" else "오후"
     }
-
-    // 나중에 위로 올리기
-    var listener: ((bedTime: Double, wakeTime: Double) -> Unit)? = null
 
     private fun notifyChanges() {
         val computeBedTime = computeBedTime()
