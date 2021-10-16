@@ -1,4 +1,6 @@
-# android_customview
+# sleep time picker
+
+
 
 ### 03.29
 - Custom View 생성 방법 파악 View 상속하기 
@@ -94,12 +96,10 @@ dependencies {
 
 ## 04.06
 - 기상 시간, 취침 시간 오류 해결 완료 
-- 수면 시간 계산 로직 변경 및 버그 해결 **그러나 잠든 시간과 깨어난 시간이 같을 때 오류 있음 해결 필요**
-- snapMinutes함수 -> snapTest 함수로 변경 snapText 함수이름 바꾸기 
+- 수면 시간 계산 로직 변경 및 버그 해결 
 - snapTest 함수 리팩토링 작업 
 
 ```
-
 ```
 ## 04.07
 - 타이머 로테이션 힌트 획득 
